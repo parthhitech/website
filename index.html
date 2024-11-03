@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>High-Quality PDF Viewer</title>
+  <title>Profile</title>
   <style>
     html, body {
       margin: 0;
@@ -25,14 +25,14 @@
       width: auto;
       max-width: 100%;
       height: auto;
-      margin-bottom: 10px; /* Space between pages */
+      margin-bottom: 10px;
       display: block;
     }
   </style>
 </head>
 <body>
   <div id="pdf-viewer"></div>
-  
+
   <script type="module">
     import * as pdfjsLib from './pdfjs/pdf.mjs';
 
@@ -42,20 +42,22 @@
     const pdfViewer = document.getElementById('pdf-viewer');
     let pdf = null;
 
-    // Function to render PDF pages with high-quality scaling
+    // Function to render PDF pages with high resolution based on device pixel ratio
     function renderPDF(scale) {
       pdfViewer.innerHTML = ''; // Clear previous content
 
-      // Loop through each page and render it on a canvas
       for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
         pdf.getPage(pageNumber).then(page => {
           const viewport = page.getViewport({ scale });
           const canvas = document.createElement('canvas');
           const context = canvas.getContext('2d');
 
-          // Set canvas dimensions based on original page size
-          canvas.width = viewport.width;
-          canvas.height = viewport.height;
+          // Set the canvas dimensions to be higher resolution based on device pixel density
+          const devicePixelRatio = window.devicePixelRatio || 1;
+          canvas.width = viewport.width * devicePixelRatio;
+          canvas.height = viewport.height * devicePixelRatio;
+          context.scale(devicePixelRatio, devicePixelRatio);
+
           pdfViewer.appendChild(canvas);
 
           page.render({
@@ -66,15 +68,14 @@
       }
     }
 
-    // Adjust PDF scale based on the viewport's width
+    // Adjust PDF scale based on viewport width and device pixel density
     function adjustPDFSize() {
-      const defaultScale = 1.5;  // Start with a default scale for high quality
+      const defaultScale = 1.5;  // Higher default scale for better quality
       const viewportWidth = pdfViewer.clientWidth;
-      
-      // Calculate scale based on viewport width relative to an 800px default PDF width
-      const scale = viewportWidth / 800 * defaultScale;
 
-      // Render PDF with calculated scale
+      // Calculate scale for high-resolution displays
+      const scale = (viewportWidth / 800) * defaultScale * (window.devicePixelRatio || 1);
+
       renderPDF(scale);
     }
 
