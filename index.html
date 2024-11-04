@@ -49,30 +49,56 @@
     let pdf = null;
 
     // Function to render PDF pages with high resolution based on device pixel ratio
-    function renderPDF(scale) {
-      pdfViewer.innerHTML = ''; // Clear previous content
+    function renderPage(pageNumber,scale) {
+      
+      pdf.getPage(pageNumber).then(page => {
+        const viewport = page.getViewport({ scale });
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
 
-      for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
-        pdf.getPage(pageNumber).then(page => {
-          const viewport = page.getViewport({ scale });
-          const canvas = document.createElement('canvas');
-          const context = canvas.getContext('2d');
+        // Set the canvas dimensions to be higher resolution based on device pixel density
+        const devicePixelRatio = window.devicePixelRatio || 1;
+        canvas.width = viewport.width * devicePixelRatio;
+        canvas.height = viewport.height * devicePixelRatio;
+        context.scale(devicePixelRatio, devicePixelRatio);
 
-          // Set the canvas dimensions to be higher resolution based on device pixel density
-          const devicePixelRatio = window.devicePixelRatio || 1;
-          canvas.width = viewport.width * devicePixelRatio;
-          canvas.height = viewport.height * devicePixelRatio;
-          context.scale(devicePixelRatio, devicePixelRatio);
+        pdfViewer.appendChild(canvas);
 
-          pdfViewer.appendChild(canvas);
-
-          page.render({
-            canvasContext: context,
-            viewport,
-          });
+        page.render({
+          canvasContext: context,
+          viewport,
         });
-      }
+      });
     }
+     // Function to load initial pages (e.g., the first 2 pages)
+     function loadInitialPages(scale) {
+         const initialPages = Math.min(2, pdf.numPages);
+         for (let i = 1; i <= initialPages; i++) {
+            renderPage(i, scale);
+         }
+      }
+
+      // Function to set up lazy loading for remaining pages
+      function setupLazyLoading(scale) {
+         for (let pageNumber = 3; pageNumber <= pdf.numPages; pageNumber++) {
+            const sentinel = document.createElement('div');
+            sentinel.classList.add('sentinel');
+            pdfViewer.appendChild(sentinel);
+
+            const observer = new IntersectionObserver(entries => {
+               entries.forEach(entry => {
+                  if (entry.isIntersecting) {
+                     observer.unobserve(entry.target);
+                     renderPage(pageNumber, scale);
+                     entry.target.remove(); // Remove sentinel after loading the page
+                  }
+               });
+            }, { rootMargin: '200px' });
+
+            observer.observe(sentinel);
+         }
+      }
+
 
     // Adjust PDF scale based on viewport width and device pixel density
     function adjustPDFSize() {
@@ -82,7 +108,8 @@
       // Calculate scale for high-resolution displays
       const scale = (viewportWidth / 800) * defaultScale * (window.devicePixelRatio || 1);
 
-      renderPDF(scale);
+      loadInitialPages(scale);
+      setupLazyLoading(scale);
     }
 
     // Load the PDF and set up resize event listener
@@ -90,7 +117,6 @@
       pdf = loadedPdf;
       adjustPDFSize();
     });
-
     window.addEventListener('resize', adjustPDFSize);
   </script>
 </body>
