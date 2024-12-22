@@ -8,97 +8,15 @@
    <link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
    <link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
    <link rel="manifest" href="/favicon_io/site.webmanifest">
+   <link rel="stylesheet" href="./styles/pdf-viewer.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Profile</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-    #pdf-viewer {
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-      height: 100%;
-    }
-    canvas {
-      width: auto;
-      max-width: 100%;
-      height: auto;
-      margin-bottom: 10px;
-      display: block;
-    }
-  </style>
+
 </head>
 <body>
   <div id="pdf-viewer"></div>
-  <script type="module">
-    import * as pdfjsLib from './pdfjs/pdf.mjs';
-  
-    const url = 'files/parthhitechprofile.pdf';
-    pdfjsLib.GlobalWorkerOptions.workerSrc = './pdfjs/pdf.worker.mjs';
-  
-    const pdfViewer = document.getElementById('pdf-viewer');
-    let pdf = null;
-    let scale = 1.5;  // Initial scale for high quality
-  
-    // Function to render a PDF page with consistent scaling
-    function renderPage(pageNumber) {
-      pdf.getPage(pageNumber).then(page => {
-        const viewport = page.getViewport({ scale });
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-  
-        // Set the canvas dimensions based on device pixel density
-        const devicePixelRatio = window.devicePixelRatio || 1;
-        canvas.width = viewport.width * devicePixelRatio;
-        canvas.height = viewport.height * devicePixelRatio;
-        context.scale(devicePixelRatio, devicePixelRatio);
-  
-        pdfViewer.appendChild(canvas);
-  
-        page.render({
-          canvasContext: context,
-          viewport,
-        });
-      });
-    }
-  
-    // Function to load all pages in the PDF
-    function loadAllPages() {
-      for (let i = 1; i <= pdf.numPages; i++) {
-        renderPage(i);
-      }
-    }
-  
-    // Adjust PDF scaling based on viewport size for consistent page size
-    function adjustPDFScale() {
-      const defaultWidth = 800; // Base width for scaling
-      const viewportWidth = pdfViewer.clientWidth;
-  
-      // Calculate scale based on viewport size
-      scale = (viewportWidth / defaultWidth) * 1.5 * (window.devicePixelRatio || 1);
-  
-      // Clear current content and load all pages again for consistent size
-      pdfViewer.innerHTML = '';
-      loadAllPages();
-    }
-  
-    // Load the PDF and set up resize event listener
-    pdfjsLib.getDocument(url).promise.then(loadedPdf => {
-      pdf = loadedPdf;
-      adjustPDFScale();
-    });
-    
-    window.addEventListener('resize', adjustPDFScale);
-  </script>
+  <script type="module" src="./scripts/pdf-viewer.js"></script>
   
 </body>
 </html>
