@@ -1,0 +1,47 @@
+.loadingtext{
+  color:#24a8af;
+  display:flex;
+  position:absolute;
+  top:600px;
+  left:50%;
+  transform: translateX(-50%);
+  text-align:center;
+  font-size:larger;
+  font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  font-size: 24px;
+  letter-spacing: 2px;
+  animation: fadeInOut 1.5s ease-in-out;
+}
+@keyframes fadeInOut {
+  0%, 100% {
+    opacity: 0; /* Completely transparent */
+  }
+  50% {
+    opacity: 1; /* Fully visible */
+  }
+}
+.word1,.word2,.word3{
+  margin-right:10px;
+  opacity: 0;
+  animation: showWord 2.5s ease-in forwards;
+}
+.word3{
+  margin-right:0px;
+}
+.word1{
+  animation-delay:1s;
+}
+.word2{
+  animation-delay:3s;
+}
+.word3{
+  animation-delay:5s;
+}
+@keyframes showWord {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

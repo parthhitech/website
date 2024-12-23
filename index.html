@@ -12,11 +12,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Profile</title>
+<link rel ="stylesheet" href="./styles/loader.css">
+  <script type="module" src="./scripts/pdf-viewer.js"></script>
+  <link rel="stylesheet" href="./styles/loadingtext.css">
 
 </head>
 <body>
+  <div class="loader">
+    <div class="container">
+      <div class="box">
+        <div class="cube"></div>
+      </div>
+    </div>
+  </div>
+  <div class="loadingtext">
+    <span class="word1" >Parth </span>
+    <span class="word2">Hitech </span>
+    <span class="word3">Projects</span>
+  </div>
   <div id="pdf-viewer"></div>
-  <script type="module" src="./scripts/pdf-viewer.js"></script>
+  <script src="./scripts/hideloader.js"></script>
   
 </body>
 </html>
